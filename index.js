@@ -1,22 +1,39 @@
 "use strict";
-var   uuid = require('node-uuid');
+var uuid = require('node-uuid');
 
+function stitch(request, response, key, options) {
+    var id = request.get(key);
+    if (!id) {
+        if (options.createIfNotSupplied) {
+            id = uuid.v4();
+            response.set(key, id);
+        } else {
+            return undefined;
+        }
+    }
+    return id;    
+}
 
 module.exports = function(options) {
-
     options = options || {};
-    return function(req, res, next) {
-        var reqId = req.get('X-Request-Id');
-        if (!reqId) {
-            if (options.createIfNotSupplied) {
-                reqId = uuid.v4();
-                res.set('X-Request-Id', reqId); //not sure if we want this 
-            } else {
-                res.status(400).send('X-Request-id is missing from the request');
-                return;
-            }
+    return function(request, response, next) {
+        var errors = [];
+        var requestId = stitch(request, response, 'X-Request-Id', options);
+        if (!requestId) {
+            errors.push('X-Request-Id is missing from the request');
+        } else {
+            request.requestId = requestId;
         }
-        req.requestId = reqId;
+        var sessionId = stitch(request, response, 'X-Session-Id', options);
+        if (!sessionId) {
+            errors.push('X-Session-Id is missing from the request');
+        } else {
+            request.sessionId = sessionId;
+        }
+        if (errors.length) {
+            response.status(400).json(errors);
+            return;
+        }
         next();
     };
 };
