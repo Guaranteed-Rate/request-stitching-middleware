@@ -4,7 +4,7 @@ var uuid = require('node-uuid');
 function stitch(request, response, key, options) {
     var id = request.get(key);
     if (!id) {
-        if (options.createIfNotSupplied) {
+        if (options.generateIfMissing) {
             id = uuid.v4();
             response.set(key, id);
         } else {

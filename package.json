@@ -1,8 +1,8 @@
 {
-  "name": "requestId-stitching-middleware",
-  "version": "0.0.1",
+  "name": "request-stitching-middleware",
+  "version": "1.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "stitching-middleware.js",
   "scripts": {
     "test": "mocha"
   },
