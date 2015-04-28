@@ -46,21 +46,9 @@ describe('middleware', function(){
         nextCalled = false;
     });
 
-    it('should not act for unmatching routes', function(){
-        var middleware = middlewareConstructor("^/NOT-AN-API");
-        
-        middleware(req, res, nextMock);
 
-        assert(nextCalled);
-        assert(res.statusCode == 200);
-        
-        assertNothingDone(req, res);
-        
-    });
-
-
-    it('should generate  IDs only for matching routes when configured', function(){
-        var middleware = middlewareConstructor("^/" + API_PREFIX, {generateIfMissing: true});
+    it('should generate IDs only for when configured', function(){
+        var middleware = middlewareConstructor({generateIfMissing: true});
     
 
         middleware(req, res, nextMock);
@@ -75,7 +63,7 @@ describe('middleware', function(){
     });
 
     it('should reject the request if session and request are missing, BY DEFAULT', function(){
-        var middleware = middlewareConstructor("^/" + API_PREFIX);
+        var middleware = middlewareConstructor();
 
         middleware(req, res, nextMock);
         
@@ -85,7 +73,7 @@ describe('middleware', function(){
         
     });
     it('should reject the request if session and request are missing, and configured explictly', function(){
-        var middleware = middlewareConstructor("^/" + API_PREFIX,  {generateIfMissing: false});
+        var middleware = middlewareConstructor({generateIfMissing: false});
     
 
         middleware(req, res, nextMock);
@@ -98,7 +86,7 @@ describe('middleware', function(){
 
 
     it('should reject the request if requestid is missing', function(){
-        var middleware = middlewareConstructor("^/" + API_PREFIX);
+        var middleware = middlewareConstructor();
 
         req._setHeadersVariable(SESSION_ID_HEADER, 'foo');
 
@@ -112,7 +100,7 @@ describe('middleware', function(){
     });
 
     it('should fail if sessionId is missing', function(){
-        var middleware = middlewareConstructor("^/" + API_PREFIX);
+        var middleware = middlewareConstructor();
     
         req._setHeadersVariable(REQ_ID_HEADER, 'foo');
 
@@ -126,7 +114,7 @@ describe('middleware', function(){
     });
 
     it('should should set sessionId and requestId', function(){
-        var middleware = middlewareConstructor("^/" + API_PREFIX);
+        var middleware = middlewareConstructor();
     
         req._setHeadersVariable(REQ_ID_HEADER, 'foo');
         req._setHeadersVariable(SESSION_ID_HEADER, 'bar');        
